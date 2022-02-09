@@ -3,6 +3,7 @@ import Bootstrap from "./scenes/Bootstrap";
 import Game from "./scenes/Game";
 import Background from "./scenes/Background";
 import RpgGame from "./scenes/rpg/RpgGame";
+import GameUI from "./scenes/rpg/GameUi";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -22,7 +23,7 @@ const config: Phaser.Types.Core.GameConfig = {
     },
   },
   autoFocus: true,
-  scene: [RpgGame],
+  scene: [RpgGame, GameUI],
 };
 const phaserGame = new Phaser.Game(config);
 (window as any).game = phaserGame;
