@@ -1,3 +1,6 @@
+import Computer from "../items/Computer";
+import Item from "../items/Item";
+
 enum HealthState {
   IDLE,
   DAMAGE,
@@ -5,6 +8,8 @@ enum HealthState {
 }
 
 export class PlayerRpg extends Phaser.Physics.Arcade.Sprite {
+  selectedItem?: Item;
+
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health = 3;
@@ -63,7 +68,10 @@ export class PlayerRpg extends Phaser.Physics.Arcade.Sprite {
     knife.setVelocity(vec.x * 300, vec.y * 300);
   }
 
-  update(cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
+  update(
+    cursors: Phaser.Types.Input.Keyboard.CursorKeys,
+    keyR: Phaser.Input.Keyboard.Key
+  ) {
     if (
       this.healthState === HealthState.DAMAGE ||
       this.healthState === HealthState.DEAD
@@ -73,6 +81,13 @@ export class PlayerRpg extends Phaser.Physics.Arcade.Sprite {
 
     if (Phaser.Input.Keyboard.JustDown(cursors.space!)) {
       this.throwKnife();
+      return;
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(keyR)) {
+      const item = this.selectedItem;
+      const computer = item as Computer;
+      computer.openDialog();
       return;
     }
 
@@ -92,6 +107,15 @@ export class PlayerRpg extends Phaser.Physics.Arcade.Sprite {
     } else {
       this.setVelocity(0, 0);
       this.anims.stop();
+    }
+
+    if (this.selectedItem) {
+      if (!this.scene.physics.overlap(this, this.selectedItem)) {
+        this.selectedItem.clearDialogBox();
+        const item = this.selectedItem;
+        const computer = item as Computer;
+        computer.closeDialog();
+      }
     }
   }
 

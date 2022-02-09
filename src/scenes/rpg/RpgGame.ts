@@ -1,10 +1,17 @@
-import { createCharacterAnims, createLizardAnims } from "../../anims/RpgAnims";
+import {
+  createCharacterAnims,
+  createChestAnims,
+  createLizardAnims,
+} from "../../anims/RpgAnims";
 import { Lizard } from "../../characters/Lizard";
 import Player from "../../characters/Player";
 import { PlayerRpg } from "../../characters/PlayerRpg";
 import { sceneEvents } from "../../events/EventsCenter";
+import { Chest } from "../../items/Chest";
+import Computer from "../../items/Computer";
 
 export default class RpgGame extends Phaser.Scene {
+  private map!: Phaser.Tilemaps.Tilemap;
   private playerSprite;
   private playerLizardCollider?: Phaser.Physics.Arcade.Collider;
   private knives!: Phaser.Physics.Arcade.Group;
@@ -31,10 +38,21 @@ export default class RpgGame extends Phaser.Scene {
       "assets/rpggame/lizard.json"
     );
 
+    this.load.atlas(
+      "treasure",
+      "assets/rpggame/treasure.png",
+      "assets/rpggame/treasure.json"
+    );
+
     this.load.image("ui-heart-full", "assets/rpggame/ui_heart_full.png");
     this.load.image("ui-heart-empty", "assets/rpggame/ui_heart_empty.png");
 
     this.load.image("knife", "assets/rpggame/weapon_knife.png");
+
+    this.load.spritesheet("computers", "assets/rpggame/computer.png", {
+      frameWidth: 96,
+      frameHeight: 64,
+    });
   }
 
   public create() {
@@ -42,14 +60,29 @@ export default class RpgGame extends Phaser.Scene {
 
     createLizardAnims(this.anims);
     createCharacterAnims(this.anims);
+    createChestAnims(this.anims);
 
-    const cloudCityTilemap = this.make.tilemap({ key: "cloud-city-map" });
-    const tileset = cloudCityTilemap.addTilesetImage("Cloud City", "tiles");
-    const groundLayer = cloudCityTilemap.createLayer("ground", tileset);
+    this.map = this.make.tilemap({ key: "cloud-city-map" });
+    const tileset = this.map.addTilesetImage("Cloud City", "tiles");
+    const groundLayer = this.map.createLayer("ground", tileset);
     groundLayer.scale = 2;
-    const wallsLayer = cloudCityTilemap.createLayer("walls", tileset);
+    const wallsLayer = this.map.createLayer("walls", tileset);
     wallsLayer.scale = 2;
     wallsLayer.setCollisionByProperty({ collides: true });
+
+    const chests = this.physics.add.staticGroup({
+      classType: Chest,
+    });
+    const chestsLayer = this.map.getObjectLayer("Chests");
+
+    chestsLayer.objects.forEach((chestObj) => {
+      chests.get(
+        chestObj.x! * 2,
+        chestObj.y! * 2,
+        "treasure",
+        "chest_empty_open_anim_f0.png"
+      );
+    });
 
     const debugGraphics = this.add.graphics().setAlpha(0.3);
     wallsLayer.renderDebug(debugGraphics, {
@@ -58,10 +91,20 @@ export default class RpgGame extends Phaser.Scene {
       faceColor: new Phaser.Display.Color(48, 39, 37, 255),
     });
 
+    // const chest = this.add.sprite(
+    //   64,
+    //   64,
+    //   "treasure",
+    //   "chest_empty_open_anim_f0.png"
+    // );
+    // this.time.delayedCall(1000, () => {
+    //   chest.play("chest-open");
+    // });
+
     const players = this.physics.add.group({
       classType: PlayerRpg,
     });
-    this.playerSprite = players.get(250, 250, "player");
+    this.playerSprite = players.get(350, 250, "player");
 
     this.lizards = this.physics.add.group({
       classType: Lizard,
@@ -77,7 +120,25 @@ export default class RpgGame extends Phaser.Scene {
     });
     this.playerSprite.setKnives(this.knives);
 
+    const computers = this.physics.add.staticGroup({ classType: Computer });
+    const computerLayer = this.map.getObjectLayer("Computer");
+    computerLayer.objects.forEach((obj, i) => {
+      const item = this.addObjectFromTiled(
+        computers,
+        obj,
+        "computers",
+        "computer"
+      ) as Computer;
+    });
+
     this.physics.add.collider(this.playerSprite, wallsLayer);
+    this.physics.add.collider(
+      this.playerSprite,
+      chests,
+      this.handlePlayerChestCollision,
+      undefined,
+      this
+    );
     this.physics.add.collider(this.lizards, wallsLayer);
     this.physics.add.collider(
       this.knives,
@@ -94,6 +155,14 @@ export default class RpgGame extends Phaser.Scene {
       this
     );
 
+    this.physics.add.overlap(
+      this.playerSprite,
+      [computers],
+      this.handleItemSelectorOverlap,
+      undefined,
+      this
+    );
+
     this.playerLizardCollider = this.physics.add.collider(
       this.lizards,
       this.playerSprite,
@@ -101,6 +170,43 @@ export default class RpgGame extends Phaser.Scene {
       undefined,
       this
     );
+  }
+
+  private addObjectFromTiled(
+    group: Phaser.Physics.Arcade.StaticGroup,
+    object: Phaser.Types.Tilemaps.TiledObject,
+    key: string,
+    tilesetName: string
+  ) {
+    const actualX = object.x! + object.width! * 0.5;
+    const actualY = object.y! - object.height! * 0.5;
+    const obj = group
+      .get(
+        actualX,
+        actualY,
+        key,
+        object.gid! - this.map.getTileset(tilesetName).firstgid
+      )
+      .setDepth(actualY);
+    return obj;
+  }
+
+  private handleItemSelectorOverlap(playerSelector, selectionItem) {
+    // console.dir(playerSelector);
+    // console.dir(selectionItem);
+    const currentItem = playerSelector.selectedItem;
+    if (currentItem) {
+      currentItem.clearDialogBox();
+    }
+    playerSelector.selectedItem = selectionItem;
+    selectionItem.onOverlapDialog();
+  }
+
+  private handlePlayerChestCollision(
+    obj1: Phaser.GameObjects.GameObject,
+    obj2: Phaser.GameObjects.GameObject
+  ) {
+    console.dir(obj2);
   }
 
   private handleKnifeWallCollision(
@@ -136,6 +242,7 @@ export default class RpgGame extends Phaser.Scene {
 
   public update(_time: number, delta: number) {
     const cursors = this.input.keyboard.createCursorKeys();
-    this.playerSprite.update(cursors);
+    const keyR = this.input.keyboard.addKey("R");
+    this.playerSprite.update(cursors, keyR);
   }
 }

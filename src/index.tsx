@@ -1,15 +1,15 @@
-import 'regenerator-runtime/runtime'
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
-import { ThemeProvider } from '@mui/material/styles'
+import "regenerator-runtime/runtime";
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import { ThemeProvider } from "@mui/material/styles";
 
-import './index.scss'
-import './PhaserGame'
+import "./index.scss";
+import "./PhaserGame";
 // import muiTheme from './MuiTheme'
-import App from './App'
+import App from "./App";
 // import reportWebVitals from './reportWebVitals'
-// import store from './stores'
+import store from "./stores";
 
 // ReactDOM.render(
 //   <React.StrictMode>
@@ -22,13 +22,14 @@ import App from './App'
 //   document.getElementById('root')
 // )
 
-
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>,
-  document.getElementById('root')
-)
+  document.getElementById("root")
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
