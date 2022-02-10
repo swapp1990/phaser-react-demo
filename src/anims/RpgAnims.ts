@@ -31,6 +31,31 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
   createPlayerAnimation(anims, Direction.LEFT, 66, 68);
 };
 
+const updateCharacterAnims = (anims, characterObj) => {
+  function createPlayerAnimation(
+    anims: Phaser.Animations.AnimationManager,
+    name: string,
+    startFrame: number,
+    endFrame: number
+  ) {
+    anims.create({
+      key: name,
+      frames: anims.generateFrameNumbers("player", {
+        start: startFrame,
+        end: endFrame,
+      }),
+      frameRate: 10,
+      repeat: -1,
+      yoyo: true,
+    });
+  }
+
+  characterObj.anims.forEach((anim) => {
+    anims.remove(anim.name);
+    createPlayerAnimation(anims, anim.name, anim.start, anim.end);
+  });
+};
+
 const createLizardAnims = (anims: Phaser.Animations.AnimationManager) => {
   anims.create({
     key: "lizard-idle",
@@ -80,4 +105,9 @@ const createChestAnims = (anims: Phaser.Animations.AnimationManager) => {
   });
 };
 
-export { createCharacterAnims, createLizardAnims, createChestAnims };
+export {
+  createCharacterAnims,
+  updateCharacterAnims,
+  createLizardAnims,
+  createChestAnims,
+};

@@ -6,13 +6,13 @@ import {
 import { Lizard } from "../../characters/Lizard";
 import Player from "../../characters/Player";
 import { PlayerRpg } from "../../characters/PlayerRpg";
-import { sceneEvents } from "../../events/EventsCenter";
+import { EventEnum, reactEvents, sceneEvents } from "../../events/EventsCenter";
 import { Chest } from "../../items/Chest";
 import Computer from "../../items/Computer";
 
 export default class RpgGame extends Phaser.Scene {
   private map!: Phaser.Tilemaps.Tilemap;
-  private playerSprite;
+  private playerRpg;
   private playerLizardCollider?: Phaser.Physics.Arcade.Collider;
   private knives!: Phaser.Physics.Arcade.Group;
   private lizards!: Phaser.Physics.Arcade.Group;
@@ -56,6 +56,8 @@ export default class RpgGame extends Phaser.Scene {
   }
 
   public create() {
+    reactEvents.on(EventEnum.PLAYER_UPDATED, this.handlePlayerUpdated, this);
+
     this.scene.run("game-ui");
 
     createLizardAnims(this.anims);
@@ -104,7 +106,7 @@ export default class RpgGame extends Phaser.Scene {
     const players = this.physics.add.group({
       classType: PlayerRpg,
     });
-    this.playerSprite = players.get(350, 250, "player");
+    this.playerRpg = players.get(350, 250, "player");
 
     this.lizards = this.physics.add.group({
       classType: Lizard,
@@ -118,7 +120,7 @@ export default class RpgGame extends Phaser.Scene {
     this.knives = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image,
     });
-    this.playerSprite.setKnives(this.knives);
+    this.playerRpg.setKnives(this.knives);
 
     const computers = this.physics.add.staticGroup({ classType: Computer });
     const computerLayer = this.map.getObjectLayer("Computer");
@@ -131,9 +133,9 @@ export default class RpgGame extends Phaser.Scene {
       ) as Computer;
     });
 
-    this.physics.add.collider(this.playerSprite, wallsLayer);
+    this.physics.add.collider(this.playerRpg, wallsLayer);
     this.physics.add.collider(
-      this.playerSprite,
+      this.playerRpg,
       chests,
       this.handlePlayerChestCollision,
       undefined,
@@ -156,7 +158,7 @@ export default class RpgGame extends Phaser.Scene {
     );
 
     this.physics.add.overlap(
-      this.playerSprite,
+      this.playerRpg,
       [computers],
       this.handleItemSelectorOverlap,
       undefined,
@@ -165,7 +167,7 @@ export default class RpgGame extends Phaser.Scene {
 
     this.playerLizardCollider = this.physics.add.collider(
       this.lizards,
-      this.playerSprite,
+      this.playerRpg,
       this.handlePlayerLizardCollision,
       undefined,
       this
@@ -191,6 +193,11 @@ export default class RpgGame extends Phaser.Scene {
     return obj;
   }
 
+  private handlePlayerUpdated(playerInfo) {
+    // console.log("handlePlayerUpdated ", playerInfo);
+    this.playerRpg.updateCharacter(playerInfo.name);
+  }
+
   private handleItemSelectorOverlap(playerSelector, selectionItem) {
     // console.dir(playerSelector);
     // console.dir(selectionItem);
@@ -206,7 +213,7 @@ export default class RpgGame extends Phaser.Scene {
     obj1: Phaser.GameObjects.GameObject,
     obj2: Phaser.GameObjects.GameObject
   ) {
-    console.dir(obj2);
+    // console.dir(obj2);
   }
 
   private handleKnifeWallCollision(
@@ -229,13 +236,13 @@ export default class RpgGame extends Phaser.Scene {
     obj2: Phaser.GameObjects.GameObject
   ) {
     const lizard = obj2 as Lizard;
-    const dx = this.playerSprite.x - lizard.x;
-    const dy = this.playerSprite.y - lizard.y;
+    const dx = this.playerRpg.x - lizard.x;
+    const dy = this.playerRpg.y - lizard.y;
     const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-    this.playerSprite.handleDamage(dir);
-    sceneEvents.emit("player-health-changed", this.playerSprite.health);
+    this.playerRpg.handleDamage(dir);
+    sceneEvents.emit("player-health-changed", this.playerRpg.health);
 
-    if (this.playerSprite.health <= 0) {
+    if (this.playerRpg.health <= 0) {
       this.playerLizardCollider?.destroy();
     }
   }
@@ -243,6 +250,6 @@ export default class RpgGame extends Phaser.Scene {
   public update(_time: number, delta: number) {
     const cursors = this.input.keyboard.createCursorKeys();
     const keyR = this.input.keyboard.addKey("R");
-    this.playerSprite.update(cursors, keyR);
+    this.playerRpg.update(cursors, keyR);
   }
 }

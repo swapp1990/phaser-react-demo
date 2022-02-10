@@ -1,3 +1,4 @@
+import { updateCharacterAnims } from "../anims/RpgAnims";
 import Computer from "../items/Computer";
 import Item from "../items/Item";
 
@@ -7,6 +8,39 @@ enum HealthState {
   DEAD,
 }
 
+const characterFrames = [
+  {
+    name: "Jason",
+    startFrame: 0,
+    anims: [
+      { name: "up", start: 36, end: 38 },
+      { name: "left", start: 12, end: 14 },
+      { name: "right", start: 24, end: 26 },
+      { name: "down", start: 0, end: 2 },
+    ],
+  },
+  {
+    name: "Emily",
+    startFrame: 3,
+    anims: [
+      { name: "up", start: 39, end: 41 },
+      { name: "left", start: 15, end: 17 },
+      { name: "right", start: 27, end: 29 },
+      { name: "down", start: 3, end: 5 },
+    ],
+  },
+  {
+    name: "Max",
+    startFrame: 54,
+    anims: [
+      { name: "up", start: 90, end: 92 },
+      { name: "left", start: 66, end: 68 },
+      { name: "right", start: 78, end: 80 },
+      { name: "down", start: 54, end: 56 },
+    ],
+  },
+];
+
 export class PlayerRpg extends Phaser.Physics.Arcade.Sprite {
   selectedItem?: Item;
 
@@ -14,6 +48,7 @@ export class PlayerRpg extends Phaser.Physics.Arcade.Sprite {
   private damageTime = 0;
   private _health = 3;
   private knives?: Phaser.Physics.Arcade.Group;
+  private selectedCharacterName: string = "Jason";
 
   get health() {
     return this._health;
@@ -32,6 +67,17 @@ export class PlayerRpg extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture, frame);
     this.setDepth(2);
     this.scale = 2;
+
+    let selCharacter = characterFrames.find(
+      (c) => c.name == this.selectedCharacterName
+    );
+    // console.log({ initStartFrame });
+    if (selCharacter) {
+      this.setFrame(selCharacter.startFrame);
+      updateCharacterAnims(this.anims, selCharacter);
+    } else {
+      this.setFrame(0);
+    }
   }
 
   private throwKnife() {
@@ -154,6 +200,15 @@ export class PlayerRpg extends Phaser.Physics.Arcade.Sprite {
           this.damageTime = 0;
         }
         break;
+    }
+  }
+
+  public updateCharacter(characterName: string) {
+    let selCharacter = characterFrames.find((c) => c.name == characterName);
+    // console.log({ initStartFrame });
+    if (selCharacter) {
+      this.setFrame(selCharacter.startFrame);
+      updateCharacterAnims(this.anims, selCharacter);
     }
   }
 }

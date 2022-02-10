@@ -1,3 +1,8 @@
 const sceneEvents = new Phaser.Events.EventEmitter();
+const reactEvents = new Phaser.Events.EventEmitter();
 
-export { sceneEvents };
+enum EventEnum {
+  PLAYER_UPDATED = "player-updated",
+}
+
+export { sceneEvents, reactEvents, EventEnum };
