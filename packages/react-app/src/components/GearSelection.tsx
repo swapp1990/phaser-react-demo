@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Button from "@mui/material/Button";
 import "./gears.scss";
 import { EventEnum, reactEvents } from "../events/EventsCenter";
+import { useAppSelector } from "../hooks";
 
 const Backdrop = styled.div`
   position: fixed;
@@ -43,20 +44,33 @@ const PanelContent = styled.div`
 `;
 
 export default function GearSelection() {
-  const [characters, setCharacters] = useState([
-    {
-      name: "Jason",
-      active: true,
-    },
-    {
-      name: "Emily",
-      active: false,
-    },
-    {
-      name: "Max",
-      active: false,
-    },
-  ]);
+  const [characters, setCharacters] = useState<any[]>([]);
+
+  const web3Contracts = useAppSelector((state) => state.web3.contracts);
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  function init() {}
+
+  useEffect(() => {
+    if (web3Contracts) {
+      setOwnedCharacters();
+    }
+  }, [web3Contracts]);
+
+  async function setOwnedCharacters() {
+    const charsMinted = await web3Contracts.Character.lastTokenId();
+    console.log({ charsMinted });
+    const charsOwned: any[] = [];
+    for (let tokenId = 0; tokenId <= charsMinted; tokenId++) {
+      const character = await web3Contracts.Character.ownedCharacters(tokenId);
+      let charObj = { name: character.name, active: true };
+      charsOwned.push(charObj);
+    }
+    setCharacters(charsOwned);
+  }
 
   function onCharacterChange(c, i) {
     let newState = [...characters];

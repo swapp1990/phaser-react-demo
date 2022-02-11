@@ -6,7 +6,11 @@ import {
 import { Lizard } from "../../characters/Lizard";
 import Player from "../../characters/Player";
 import { PlayerRpg } from "../../characters/PlayerRpg";
-import { EventEnum, reactEvents, sceneEvents } from "../../events/EventsCenter";
+import {
+  EventEnum,
+  reactEvents,
+  sceneEvents,
+} from "../../../events/EventsCenter";
 import { Chest } from "../../items/Chest";
 import Computer from "../../items/Computer";
 

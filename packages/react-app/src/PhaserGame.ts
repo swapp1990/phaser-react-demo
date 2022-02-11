@@ -1,9 +1,9 @@
 import Phaser from "phaser";
-import Bootstrap from "./scenes/Bootstrap";
-import Game from "./scenes/Game";
-import Background from "./scenes/Background";
-import RpgGame from "./scenes/rpg/RpgGame";
-import GameUI from "./scenes/rpg/GameUi";
+import Bootstrap from "./phaser/scenes/Bootstrap";
+import Game from "./phaser/scenes/Game";
+import Background from "./phaser/scenes/Background";
+import RpgGame from "./phaser/scenes/rpg/RpgGame";
+import GameUI from "./phaser/scenes/rpg/GameUi";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,

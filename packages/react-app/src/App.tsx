@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useAppSelector } from "./hooks";
 import Chat from "./components/Chat";
 import GearSelection from "./components/GearSelection";
+import NetworkDisplay from "./components/web3/NetworkDisplay";
 
 const Backdrop = styled.div`
   position: absolute;
@@ -19,6 +20,11 @@ function App() {
     console.log("computerDialogOpen");
     ui = <Chat />;
   }
-  return <Backdrop>{ui}</Backdrop>;
+  return (
+    <div>
+      <NetworkDisplay />
+      <Backdrop>{ui}</Backdrop>
+    </div>
+  );
 }
 export default App;

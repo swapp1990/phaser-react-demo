@@ -1,9 +1,9 @@
-import store from "../stores";
+import store from "../../stores";
 import Item from "./Item";
 import {
   openComputerDialog,
   closeComputerDialog,
-} from "../stores/ComputerStore";
+} from "../../stores/ComputerStore";
 
 export default class Computer extends Item {
   constructor(

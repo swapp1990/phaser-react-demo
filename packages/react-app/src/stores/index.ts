@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import computerReducer from "./ComputerStore";
+import web3Reducer from "./Web3Store";
 
 const store = configureStore({
   reducer: {
     computer: computerReducer,
+    web3: web3Reducer,
   },
   // Temporary disable serialize check for redux as we store MediaStream in ComputerStore.
   // https://stackoverflow.com/a/63244831
