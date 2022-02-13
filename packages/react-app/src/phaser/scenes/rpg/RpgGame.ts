@@ -26,6 +26,7 @@ export default class RpgGame extends Phaser.Scene {
   }
 
   public preload() {
+    console.log("preload");
     this.load.image("tiles", "assets/rpggame/cloud_tileset.png");
     this.load.tilemapTiledJSON(
       "cloud-city-map",

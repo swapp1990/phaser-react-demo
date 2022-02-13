@@ -5,22 +5,13 @@ import { Provider } from "react-redux";
 import { ThemeProvider } from "@mui/material/styles";
 
 import "./index.scss";
-import "./PhaserGame";
+// import "./games/PhaserGame";
+// import "./games/PhaserNavMeshGame";
+
 // import muiTheme from './MuiTheme'
 import App from "./App";
 // import reportWebVitals from './reportWebVitals'
 import store from "./stores";
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <Provider store={store}>
-//       <ThemeProvider theme={muiTheme}>
-//         <App />
-//       </ThemeProvider>
-//     </Provider>
-//   </React.StrictMode>,
-//   document.getElementById('root')
-// )
 
 ReactDOM.render(
   <React.StrictMode>

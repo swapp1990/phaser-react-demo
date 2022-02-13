@@ -11,7 +11,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 
-import phaserGame from "../PhaserGame";
+// import phaserGame from "../games/PhaserGame";
 import Game from "../phaser/scenes/Game";
 
 // import { getColorByString } from '../util'
@@ -148,7 +148,7 @@ export default function Chat() {
   // const focused = useAppSelector((state) => state.chat.focused)
   // const showChat = useAppSelector((state) => state.chat.showChat)
   // const dispatch = useAppDispatch()
-  const game = phaserGame.scene.keys.game as Game;
+  //   const game = phaserGame.scene.keys.game as Game;
 
   const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
     setInputValue(event.currentTarget.value);

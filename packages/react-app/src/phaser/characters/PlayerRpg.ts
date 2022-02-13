@@ -172,7 +172,7 @@ export class PlayerRpg extends Phaser.Physics.Arcade.Sprite {
     }
 
     --this._health;
-    console.log(this._health);
+    // console.log(this._health);
     if (this._health <= 0) {
       this.healthState = HealthState.DEAD;
       this.setTint(0xff8102);

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Button from "@mui/material/Button";
 
-import phaserGame from "../PhaserGame";
+import phaserGame from "../games/PhaserGame";
 import Bootstrap from "../phaser/scenes/Bootstrap";
 
 const Backdrop = styled.div`
