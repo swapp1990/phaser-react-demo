@@ -6,7 +6,10 @@ import {
 } from "../../../events/EventsCenter";
 import FollowerSprite from "../../../games/follower";
 import store from "../../../stores";
-import { incrementCoinsCollected } from "../../../stores/PickupStore";
+import {
+  incrementAliensKilled,
+  incrementCoinsCollected,
+} from "../../../stores/PickupStore";
 import { createCharacterAnims, createLizardAnims } from "../../anims/RpgAnims";
 import Pickup from "../../items/Pickup";
 import { NavAlien } from "./player/NavAlien";
@@ -20,6 +23,7 @@ export default class NavMeshTestScene extends Phaser.Scene {
   private pickups;
   private playerAlienCollider?: Phaser.Physics.Arcade.Collider;
   private knives!: Phaser.Physics.Arcade.Group;
+  private alienReplicateTimer;
 
   constructor() {
     super({
@@ -86,8 +90,8 @@ export default class NavMeshTestScene extends Phaser.Scene {
       // once a heart is removed, it's added to the pool
       classType: Pickup,
     });
+    this.refreshPickups();
 
-    this.addRandomPickups();
     let alien1 = this.aliens.get(20, 30, "lizard");
     alien1.setNavMesh(this.navMesh, this.pickups);
     let alien2 = this.aliens.get(50, 680, "lizard");
@@ -133,11 +137,53 @@ export default class NavMeshTestScene extends Phaser.Scene {
       undefined,
       this
     );
+
+    //timer
+    this.alienReplicateTimer = this.time.addEvent({
+      delay: 5000, // ms
+      callback: this.replicateRandomAliveAlien,
+      callbackScope: this,
+      loop: true,
+      //args: [],
+      //   repeat: 4,
+    });
+
+    this.time.addEvent({
+      delay: 10000, // ms
+      callback: this.refreshPickups,
+      callbackScope: this,
+      loop: true,
+      //args: [],
+      //   repeat: 4,
+    });
+  }
+
+  refreshPickups() {
+    this.pickups.clear(true);
+    this.addRandomPickups();
   }
 
   randomIntFromInterval(min, max) {
     // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  replicateRandomAliveAlien() {
+    let children = this.aliens.children.entries;
+    // console.log("replicateRandomAliveAlien ", children.length);
+    if (children.length < 10) {
+      //   console.log(children);
+      var randomChild: NavAlien = children[
+        Math.floor(Math.random() * children.length)
+      ] as NavAlien;
+      this.addNewAlien(randomChild.x, randomChild.y);
+    }
+    // this.addNewAlien();
+  }
+
+  addNewAlien(x, y) {
+    let alien1 = this.aliens.get(x, y, "lizard");
+    alien1.setNavMesh(this.navMesh, this.pickups);
   }
 
   getRandomPointOnNavMap() {
@@ -200,7 +246,11 @@ export default class NavMeshTestScene extends Phaser.Scene {
     obj1: Phaser.GameObjects.GameObject,
     obj2: Phaser.GameObjects.GameObject
   ) {
+    // console.log(obj1, obj2);
     this.knives.killAndHide(obj1);
+    this.knives.remove(obj1);
     this.aliens.killAndHide(obj2);
+    this.aliens.remove(obj2);
+    store.dispatch(incrementAliensKilled({}));
   }
 }

@@ -4,6 +4,7 @@ import { useAppSelector } from "../../hooks";
 
 export default function GameTitle() {
   const coinsCollected = useAppSelector((state) => state.pickup.coinsCollected);
+  const aliensKilled = useAppSelector((state) => state.pickup.aliensKilled);
   const [playerHealth, setPlayerHealth] = useState(5);
 
   useEffect(() => {
@@ -20,7 +21,8 @@ export default function GameTitle() {
       <div>
         <h2>Game Combat</h2>
         <div>
-          Coins Collected: {coinsCollected}, Player Health: {playerHealth}
+          Coins Collected: {coinsCollected}, Player Health: {playerHealth},
+          Aliens Killed: {aliensKilled}
         </div>
       </div>
     </>
