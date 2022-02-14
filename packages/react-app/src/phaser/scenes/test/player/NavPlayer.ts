@@ -47,7 +47,17 @@ export class NavPlayer extends Phaser.Physics.Arcade.Sprite {
   private path;
   private currentTarget;
   private selectedCharacterName: string = "Jason";
+  private healthState = HealthState.IDLE;
+  private damageTime = 0;
+  private _health = 5;
+  private knives?: Phaser.Physics.Arcade.Group;
+  get health() {
+    return this._health;
+  }
 
+  setKnives(knives: Phaser.Physics.Arcade.Group) {
+    this.knives = knives;
+  }
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -97,11 +107,75 @@ export class NavPlayer extends Phaser.Physics.Arcade.Sprite {
     else this.currentTarget = null;
   }
 
+  preUpdate(t: number, dt: number) {
+    //Without super.preUpdate anims stops working
+    super.preUpdate(t, dt);
+    switch (this.healthState) {
+      case HealthState.IDLE:
+        break;
+      case HealthState.DAMAGE:
+        this.damageTime += dt;
+        // console.log(this.damageTime);
+        if (this.damageTime >= 350) {
+          this.healthState = HealthState.IDLE;
+          this.setTint(0xffffff);
+          this.damageTime = 0;
+        }
+        break;
+    }
+  }
+
+  private throwKnife() {
+    if (!this.anims.currentAnim) return;
+    const direction = this.anims.currentAnim.key;
+    const vec = new Phaser.Math.Vector2(0, 0);
+    switch (direction) {
+      case "up":
+        vec.y = -1;
+        break;
+      case "down":
+        vec.y = 1;
+        break;
+      case "left":
+        vec.x = -1;
+        break;
+      case "right":
+        vec.x = 1;
+        break;
+    }
+
+    const angle = vec.angle();
+
+    var knife = this.knives?.get(
+      this.x,
+      this.y,
+      "knife"
+    ) as Phaser.Physics.Arcade.Image;
+    knife.setActive(true);
+    knife.setVisible(true);
+    knife.setRotation(angle);
+    knife.x += vec.x * 16;
+    knife.y += vec.y * 16;
+    knife.setVelocity(vec.x * 300, vec.y * 300);
+  }
+
   update(
     cursors: Phaser.Types.Input.Keyboard.CursorKeys,
     keyR: Phaser.Input.Keyboard.Key,
     delta: number
   ) {
+    if (
+      this.healthState === HealthState.DAMAGE ||
+      this.healthState === HealthState.DEAD
+    ) {
+      return;
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(cursors.space!)) {
+      this.throwKnife();
+      return;
+    }
+
     const speed = 200;
     if (cursors.left.isDown) {
       this.setVelocity(-speed, 0);
@@ -138,6 +212,29 @@ export class NavPlayer extends Phaser.Physics.Arcade.Sprite {
     //     this.moveTowards(this.currentTarget, speed, delta / 1000);
     // }
   }
+
+  public handleDamage(dir: Phaser.Math.Vector2) {
+    if (this._health <= 0) return;
+    if (this.healthState === HealthState.DAMAGE) {
+      return;
+    }
+
+    --this._health;
+    // console.log(this._health);
+    console.log(dir);
+    if (this._health <= 0) {
+      this.healthState = HealthState.DEAD;
+      this.setTint(0xff8102);
+      this.setVelocity(0, 0);
+      this.anims.stop();
+    } else {
+      this.damageTime = 0;
+      this.setVelocity(dir.x, dir.y);
+      this.setTint(0xff0000);
+      this.healthState = HealthState.DAMAGE;
+    }
+  }
+
   moveTowards(targetPosition, maxSpeed = 200, elapsedSeconds) {
     const { x, y } = targetPosition;
     const angle = Phaser.Math.Angle.Between(this.x, this.y, x, y);

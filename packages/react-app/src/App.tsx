@@ -8,6 +8,7 @@ import "./games/PhaserNavMeshGame";
 
 import "./app.scss";
 import Player from "./components/panels/Player";
+import GameTitle from "./components/panels/GameTitle";
 
 const Backdrop = styled.div`
   position: absolute;
@@ -39,6 +40,9 @@ function App() {
           <NetworkDisplay />
         </div>
         <div className="content">
+          <div className="title">
+            <GameTitle />
+          </div>
           <div className="phaser-wrapper" id="game-container"></div>
         </div>
       </div>

@@ -12,6 +12,7 @@ const map = (value, min, max, newMin, newMax) => {
 
 export class NavAlien extends Phaser.Physics.Arcade.Sprite {
   private navMesh: any;
+  private pickups;
   private path;
   private currentTarget;
   private currentDest;
@@ -57,9 +58,39 @@ export class NavAlien extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  setNavMesh(navMesh) {
+  setTargetFromPath(point: Phaser.Math.Vector2) {
+    this.path = this.navMesh.findPath(
+      new Phaser.Math.Vector2(this.x, this.y),
+      point
+    );
+    if (this.path && this.path.length > 0) {
+      this.currentTarget = this.path.shift();
+      // console.log(this.currentTarget);
+      return true;
+    }
+    return false;
+  }
+
+  setNavMesh(navMesh, pickups) {
     this.navMesh = navMesh;
-    this.currentDest = this.getRandomPoint();
+    this.pickups = pickups;
+    this.setTargetForMovement();
+    // this.currentDest = this.getRandomPoint();
+  }
+
+  setTargetForMovement() {
+    let pickupPoints = this.pickups.children.entries.map((spr) => {
+      return new Phaser.Math.Vector2(spr.x, spr.y);
+    });
+    // console.log({ pickupPoints: pickupPoints.length });
+    if (pickupPoints.length > 0) {
+      var randomPoint =
+        pickupPoints[Math.floor(Math.random() * pickupPoints.length)];
+      this.setTargetFromPath(randomPoint);
+    } else {
+      this.getRandomPoint();
+    }
+    // console.log(pickupPoints);
   }
 
   goTo(targetPoint) {
@@ -86,7 +117,8 @@ export class NavAlien extends Phaser.Physics.Arcade.Sprite {
         if (this.path.length > 0) {
           this.currentTarget = this.path.shift();
         } else {
-          this.currentDest = this.getRandomPoint();
+          //   this.currentDest = this.getRandomPoint();
+          this.setTargetForMovement();
         }
       }
     }
