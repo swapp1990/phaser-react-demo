@@ -38,8 +38,7 @@ export default function useContractLoader(providerOrSigner, config = {}) {
           let contractList = {};
           try {
             contractList =
-              config.hardhatContracts ||
-              require("../contracts/hardhat_contracts.json");
+              config.hardhatContracts || require("./hardhat_contracts.json");
             console.log(_chainId);
           } catch (e) {
             console.log(e);
