@@ -42,6 +42,7 @@ export default function Player() {
 
   function onCharacterChange(c, i) {
     let newState = [...characters];
+    if (!newState[i].alive) return;
     newState.forEach((item) => {
       item.active = false;
     });

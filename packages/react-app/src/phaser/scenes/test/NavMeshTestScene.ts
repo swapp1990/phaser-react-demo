@@ -124,6 +124,14 @@ export default class NavMeshTestScene extends Phaser.Scene {
 
     this.physics.add.collider(
       this.knives,
+      this.wallLayer,
+      this.handleKnifeWallsCollision,
+      undefined,
+      this
+    );
+
+    this.physics.add.collider(
+      this.knives,
       this.aliens,
       this.handleKnifeLizardCollision,
       undefined,
@@ -345,5 +353,13 @@ export default class NavMeshTestScene extends Phaser.Scene {
     this.aliens.killAndHide(obj2);
     this.aliens.remove(obj2);
     store.dispatch(incrementAliensKilled({}));
+  }
+
+  private handleKnifeWallsCollision(
+    obj1: Phaser.GameObjects.GameObject,
+    obj2: Phaser.GameObjects.GameObject
+  ) {
+    this.knives.killAndHide(obj1);
+    this.knives.remove(obj1);
   }
 }

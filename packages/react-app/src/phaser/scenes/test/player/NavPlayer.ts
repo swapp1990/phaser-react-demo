@@ -47,8 +47,8 @@ const characterFrames = [
     startFrame: 9,
     anims: [
       { name: "up", start: 12 * 3 + 9, end: 12 * 3 + 9 + 2 },
-      { name: "left", start: 12 * 2 + 9, end: 12 * 2 + 9 + 2 },
-      { name: "right", start: 12 + 9, end: 12 * 2 + 9 + 2 },
+      { name: "left", start: 12 + 9, end: 12 + 9 + 2 },
+      { name: "right", start: 12 * 2 + 9, end: 12 * 2 + 9 + 2 },
       { name: "down", start: 9, end: 11 },
     ],
   },
@@ -57,8 +57,8 @@ const characterFrames = [
     startFrame: 48,
     anims: [
       { name: "up", start: 12 * 3 + 48, end: 12 * 3 + 48 + 2 },
-      { name: "left", start: 12 * 2 + 48, end: 12 * 2 + 48 + 2 },
-      { name: "right", start: 12 + 48, end: 12 * 2 + 48 + 2 },
+      { name: "left", start: 12 + 48, end: 12 + 48 + 2 },
+      { name: "right", start: 12 * 2 + 48, end: 12 * 2 + 48 + 2 },
       { name: "down", start: 48, end: 50 },
     ],
   },
@@ -66,10 +66,10 @@ const characterFrames = [
     name: "Brand",
     startFrame: 55,
     anims: [
-      { name: "up", start: 12 * 3 + 55, end: 12 * 3 + 55 + 2 },
-      { name: "left", start: 12 * 2 + 55, end: 12 * 2 + 55 + 2 },
-      { name: "right", start: 12 + 55, end: 12 * 2 + 55 + 2 },
-      { name: "down", start: 55, end: 57 },
+      { name: "up", start: 12 * 3 + 54, end: 12 * 3 + 54 + 2 },
+      { name: "left", start: 12 + 54, end: 12 + 54 + 2 },
+      { name: "right", start: 12 * 2 + 54, end: 12 * 2 + 54 + 2 },
+      { name: "down", start: 54, end: 56 },
     ],
   },
 ];
