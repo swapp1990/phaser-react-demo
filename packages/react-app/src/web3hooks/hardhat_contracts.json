@@ -5,7 +5,7 @@
       "chainId": "4",
       "contracts": {
         "Character": {
-          "address": "0x5a7BEa3caC6f5f702C7d67748305F40CAD175B33",
+          "address": "0xb80BE5e0da969d5EFd5f12FEeAf279Fc8EB13DbA",
           "abi": [
             {
               "inputs": [],
@@ -77,6 +77,12 @@
             },
             {
               "anonymous": false,
+              "inputs": [],
+              "name": "LbAdded",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
               "inputs": [
                 {
                   "indexed": true,
@@ -118,6 +124,36 @@
               ],
               "name": "Transfer",
               "type": "event"
+            },
+            {
+              "inputs": [
+                {
+                  "components": [
+                    {
+                      "internalType": "string",
+                      "name": "name",
+                      "type": "string"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "coins",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "killed",
+                      "type": "uint256"
+                    }
+                  ],
+                  "internalType": "struct Character.LB_entry[]",
+                  "name": "entries",
+                  "type": "tuple[]"
+                }
+              ],
+              "name": "addLbEntry",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
             },
             {
               "inputs": [
@@ -195,6 +231,19 @@
               "type": "function"
             },
             {
+              "inputs": [],
+              "name": "getLbEntriesCount",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
               "inputs": [
                 {
                   "internalType": "address",
@@ -225,6 +274,35 @@
                 {
                   "internalType": "uint256",
                   "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "name": "lbEntries",
+              "outputs": [
+                {
+                  "internalType": "string",
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "coins",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "killed",
                   "type": "uint256"
                 }
               ],

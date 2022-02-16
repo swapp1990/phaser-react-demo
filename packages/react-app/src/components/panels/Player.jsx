@@ -4,6 +4,7 @@ import {
   phaserEvents,
   reactEvents,
 } from "../../events/EventsCenter";
+import { Table } from "antd";
 import { useAppSelector } from "../../hooks";
 import "./player.scss";
 
@@ -15,6 +16,8 @@ export default function Player() {
   useEffect(() => {
     if (web3Contracts) {
       setOwnedCharacters();
+      reactEvents.on(EventEnum.REFRESH_LB, handleRefreshLb, this);
+      handleRefreshLb();
     }
   }, [web3Contracts]);
 
@@ -88,6 +91,7 @@ export default function Player() {
 
   const playerWindow = (
     <div className="profile">
+      <h1>Characters</h1>
       <div className="selection">
         {characters.map((g, i) => (
           <div
@@ -108,9 +112,58 @@ export default function Player() {
     </div>
   );
 
+  const [dataSource, setDataSource] = useState([]);
+
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Coins Collected",
+      dataIndex: "coins",
+      key: "coins",
+    },
+    {
+      title: "Aliens Killed",
+      dataIndex: "killed",
+      key: "killed",
+    },
+  ];
+
+  async function handleRefreshLb() {
+    const lbEntriesCount = await web3Contracts.Character.getLbEntriesCount();
+    console.log({ lbEntriesCount: lbEntriesCount.toNumber() });
+    let dataSourceT = [];
+    for (let i = 0; i < lbEntriesCount; i++) {
+      const lbEntry = await web3Contracts.Character.lbEntries(i);
+      dataSourceT.push({
+        key: i,
+        name: lbEntry.name,
+        coins: lbEntry.coins.toNumber(),
+        killed: lbEntry.killed.toNumber(),
+      });
+    }
+    setDataSource(dataSourceT);
+  }
+
+  const leaderBoardWindow = (
+    <div className="lbWrapper">
+      <h1>Leaderboard</h1>
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        pagination={false}
+        size="small"
+      />
+    </div>
+  );
+
   return (
-    <>
-      <div>{playerWindow}</div>
-    </>
+    <div className="sideWrapper">
+      {playerWindow}
+      {leaderBoardWindow}
+    </div>
   );
 }

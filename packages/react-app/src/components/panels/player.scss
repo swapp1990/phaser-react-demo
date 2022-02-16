@@ -1,7 +1,10 @@
 .profile {
-  padding: 20px;
+  padding: 5px;
   border: 1px solid orange;
-  width: 80%;
+  width: 100%;
+  h1 {
+    color: white;
+  }
   .selection {
     border: 1px solid red;
     .char {
@@ -10,6 +13,7 @@
       border-radius: 10px;
       justify-content: space-between;
       margin: 10px;
+
       cursor: pointer;
       .name {
         padding-left: 10px;
@@ -24,4 +28,22 @@
       background-color: aqua;
     }
   }
+}
+
+.lbWrapper {
+  margin-top: 50px;
+  padding: 5px;
+  border: 1px solid orange;
+  width: 100%;
+
+  h1 {
+    color: white;
+  }
+}
+
+.sideWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }

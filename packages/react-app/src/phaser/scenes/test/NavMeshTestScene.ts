@@ -315,7 +315,6 @@ export default class NavMeshTestScene extends Phaser.Scene {
     this.aliens.clear(true);
     this.scene.launch("gameover");
     this.countdown = 100;
-    store.dispatch(resetState({}));
   }
 
   public update(_time: number, delta: number) {

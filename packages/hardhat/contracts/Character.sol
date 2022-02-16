@@ -21,9 +21,17 @@ contract Character is ERC721, Ownable  {
 
 	mapping (uint256 => Character) public ownedCharacters;
 
+	struct LB_entry {
+		string name;
+		uint256 coins;
+		uint256 killed;
+	}
+	LB_entry[] public lbEntries;
+
 	event CharacterMinted(
         uint256 tokenId
     );
+	event LbAdded();
 	constructor() public ERC721("Character", "CHR") {
 
   	}
@@ -40,6 +48,19 @@ contract Character is ERC721, Ownable  {
 			_tokenIds = _tokenIds+1;
 		}
 		emit CharacterMinted(lastTokenId);
+	}
+
+	function addLbEntry(LB_entry[] memory entries) public {
+		delete lbEntries;
+		for(uint i=0; i<entries.length; i++) {
+			LB_entry memory entry = entries[i];
+			lbEntries.push(entry);
+		}
+		emit LbAdded();
+	}
+
+	function getLbEntriesCount() public view returns (uint256) {
+		return lbEntries.length;
 	}
 
 	function getCharacterName(uint256 tokenId) public view returns (string memory) {

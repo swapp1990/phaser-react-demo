@@ -111,10 +111,10 @@ export default function MintCharacter() {
         if (update) {
           if (update.status === "confirmed" || update.status === 1) {
             console.log("Minted");
-            setOwnedCharacters();
           }
           if (update.events) {
             console.log({ event: update.events.length });
+            setOwnedCharacters();
           }
         } else {
         }

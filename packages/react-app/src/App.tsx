@@ -12,6 +12,7 @@ import GameTitle from "./components/panels/GameTitle";
 import MintCharacter from "./components/panels/MintCharacter";
 import { EventEnum, reactEvents } from "./events/EventsCenter";
 import { useEffect, useState } from "react";
+import AddLeaderboard from "./components/panels/AddLeaderboard";
 
 const Backdrop = styled.div`
   position: absolute;
@@ -19,16 +20,28 @@ const Backdrop = styled.div`
   width: 100%;
 `;
 
-function App() {
+export default function App() {
   const [playerMinted, setPlayerMinted] = useState(false);
+  const [gameOver, setGameover] = useState(false);
 
   useEffect(() => {
     reactEvents.on(EventEnum.PLAYER_MINTED, handlePlayerMinted);
+    reactEvents.on(EventEnum.GAME_OVER, handleGameOver);
   }, []);
 
   function handlePlayerMinted() {
     console.log("handlePlayerMinted");
     setPlayerMinted(true);
+  }
+
+  function handleGameOver() {
+    console.log("handleGameOver");
+    setGameover(true);
+  }
+
+  function handleCloseEvent() {
+    console.log("parent: handleCloseEvent");
+    setGameover(false);
   }
 
   return (
@@ -41,6 +54,13 @@ function App() {
       </div>
       <div className="game">
         {!playerMinted && <MintCharacter />}
+        {gameOver && (
+          <AddLeaderboard
+            handleCloseEvent={() => {
+              handleCloseEvent();
+            }}
+          />
+        )}
         <div className="header">
           <div>Spaceborn</div>
           <NetworkDisplay />
@@ -56,4 +76,3 @@ function App() {
     </div>
   );
 }
-export default App;

@@ -13,6 +13,7 @@ enum EventEnum {
   SPAWN_NEW_CHAR = "spawn",
   GAME_OVER = "game",
   GAME_INIT = "init",
+  REFRESH_LB = "refresh_lb",
 }
 
 export { sceneEvents, reactEvents, phaserEvents, EventEnum };
