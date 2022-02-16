@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import PhaserNavMeshPlugin from "phaser-navmesh";
 import NavMeshTestScene from "../phaser/scenes/test/NavMeshTestScene";
+import LoadingScene from "../phaser/scenes/test/LoadingScene";
+import GameOverScene from "../phaser/scenes/test/GameOverScene";
 
 // import "./styles.css";
 
@@ -9,7 +11,7 @@ const game = new Phaser.Game({
   parent: "game-container",
   width: 750,
   height: 750,
-  scene: [NavMeshTestScene],
+  scene: [NavMeshTestScene, GameOverScene],
   plugins: {
     scene: [
       {

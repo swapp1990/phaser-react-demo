@@ -66,7 +66,7 @@ export default function GearSelection() {
     const charsOwned: any[] = [];
     for (let tokenId = 0; tokenId <= charsMinted; tokenId++) {
       const character = await web3Contracts.Character.ownedCharacters(tokenId);
-      let charObj = { name: character.name, active: true };
+      let charObj = { name: character.name, active: true, alive: true };
       charsOwned.push(charObj);
     }
     setCharacters(charsOwned);
@@ -96,7 +96,10 @@ export default function GearSelection() {
                 key={i}
                 onClick={() => onCharacterChange(g, i)}
               >
-                {g.name}
+                <div className="char">
+                  <div>{g.name}</div>
+                  <div>{g.alive ? "Alive" : "Dead"}</div>
+                </div>
               </div>
             ))}
           </div>

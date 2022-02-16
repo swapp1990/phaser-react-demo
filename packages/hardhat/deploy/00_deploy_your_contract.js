@@ -12,8 +12,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
-  const characterContract = await ethers.getContract("Character", deployer);
-  const names = ["Jason", "Emily", "Max"];
-  await characterContract.mintMultipleCharacters(names);
+  //   const characterContract = await ethers.getContract("Character", deployer);
+  //   const names = ["Jason", "Emily", "Max"];
+  //   await characterContract.mintMultipleCharacters(names);
 };
 module.exports.tags = ["Character"];

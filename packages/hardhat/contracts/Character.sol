@@ -21,6 +21,9 @@ contract Character is ERC721, Ownable  {
 
 	mapping (uint256 => Character) public ownedCharacters;
 
+	event CharacterMinted(
+        uint256 tokenId
+    );
 	constructor() public ERC721("Character", "CHR") {
 
   	}
@@ -36,6 +39,7 @@ contract Character is ERC721, Ownable  {
 			chr.exists = true;
 			_tokenIds = _tokenIds+1;
 		}
+		emit CharacterMinted(lastTokenId);
 	}
 
 	function getCharacterName(uint256 tokenId) public view returns (string memory) {

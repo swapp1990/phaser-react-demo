@@ -1,3 +1,4 @@
+import { EventEnum, phaserEvents } from "../../../../events/EventsCenter";
 import { createCharacterAnims } from "../../../anims/CharacterAnims";
 import { updateCharacterAnims } from "../../../anims/RpgAnims";
 
@@ -22,7 +23,7 @@ const characterFrames = [
     ],
   },
   {
-    name: "Emily",
+    name: "Sarah",
     startFrame: 3,
     anims: [
       { name: "up", start: 39, end: 41 },
@@ -33,15 +34,46 @@ const characterFrames = [
   },
   {
     name: "Max",
-    startFrame: 54,
+    startFrame: 6,
     anims: [
-      { name: "up", start: 90, end: 92 },
-      { name: "left", start: 66, end: 68 },
-      { name: "right", start: 78, end: 80 },
-      { name: "down", start: 54, end: 56 },
+      { name: "up", start: 12 * 3 + 6, end: 12 * 3 + 6 + 2 },
+      { name: "left", start: 12 * 2 + 6, end: 12 * 2 + 6 + 2 },
+      { name: "right", start: 12 + 6, end: 12 * 2 + 6 + 2 },
+      { name: "down", start: 6, end: 9 },
+    ],
+  },
+  {
+    name: "Layla",
+    startFrame: 9,
+    anims: [
+      { name: "up", start: 12 * 3 + 9, end: 12 * 3 + 9 + 2 },
+      { name: "left", start: 12 * 2 + 9, end: 12 * 2 + 9 + 2 },
+      { name: "right", start: 12 + 9, end: 12 * 2 + 9 + 2 },
+      { name: "down", start: 9, end: 11 },
+    ],
+  },
+  {
+    name: "Dwayne",
+    startFrame: 48,
+    anims: [
+      { name: "up", start: 12 * 3 + 48, end: 12 * 3 + 48 + 2 },
+      { name: "left", start: 12 * 2 + 48, end: 12 * 2 + 48 + 2 },
+      { name: "right", start: 12 + 48, end: 12 * 2 + 48 + 2 },
+      { name: "down", start: 48, end: 50 },
+    ],
+  },
+  {
+    name: "Brand",
+    startFrame: 55,
+    anims: [
+      { name: "up", start: 12 * 3 + 55, end: 12 * 3 + 55 + 2 },
+      { name: "left", start: 12 * 2 + 55, end: 12 * 2 + 55 + 2 },
+      { name: "right", start: 12 + 55, end: 12 * 2 + 55 + 2 },
+      { name: "down", start: 55, end: 57 },
     ],
   },
 ];
+
 export class NavPlayer extends Phaser.Physics.Arcade.Sprite {
   private navMesh: any;
   private path;
@@ -49,7 +81,7 @@ export class NavPlayer extends Phaser.Physics.Arcade.Sprite {
   private selectedCharacterName: string = "Jason";
   private healthState = HealthState.IDLE;
   private damageTime = 0;
-  private _health = 5;
+  private _health = 3;
   private knives?: Phaser.Physics.Arcade.Group;
   get health() {
     return this._health;
@@ -88,6 +120,7 @@ export class NavPlayer extends Phaser.Physics.Arcade.Sprite {
     if (selCharacter) {
       this.setFrame(selCharacter.startFrame);
       updateCharacterAnims(this.anims, selCharacter);
+      this.selectedCharacterName = characterName;
     }
   }
 
@@ -221,13 +254,14 @@ export class NavPlayer extends Phaser.Physics.Arcade.Sprite {
 
     --this._health;
     // console.log(this._health);
-    console.log(dir);
-    if (this._health <= 0) {
+    // console.log(dir);
+    if (this._health == 0) {
       this.healthState = HealthState.DEAD;
       this.setTint(0xff8102);
       this.setVelocity(0, 0);
       this.anims.stop();
-    } else {
+      phaserEvents.emit(EventEnum.CHAR_DIED, this.selectedCharacterName);
+    } else if (this._health > 0) {
       this.damageTime = 0;
       this.setVelocity(dir.x, dir.y);
       this.setTint(0xff0000);

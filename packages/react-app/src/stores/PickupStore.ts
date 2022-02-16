@@ -19,10 +19,14 @@ export const pickupSlice = createSlice({
     incrementAliensKilled: (state, action: PayloadAction<{}>) => {
       ++state.aliensKilled;
     },
+    resetState: (state, action: PayloadAction<{}>) => {
+      state.aliensKilled = 0;
+      state.coinsCollected = 0;
+    },
   },
 });
 
-export const { incrementCoinsCollected, incrementAliensKilled } =
+export const { incrementCoinsCollected, incrementAliensKilled, resetState } =
   pickupSlice.actions;
 
 export default pickupSlice.reducer;

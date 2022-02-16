@@ -5,7 +5,7 @@ const { ethers } = require("ethers");
 export default function useContractLoader(providerOrSigner, config = {}) {
   const [contracts, setContracts] = useState();
   useEffect(() => {
-    console.log(providerOrSigner);
+    // console.log(providerOrSigner);
     let active = true;
     async function loadContracts() {
       if (providerOrSigner && typeof providerOrSigner !== "undefined") {
@@ -13,8 +13,26 @@ export default function useContractLoader(providerOrSigner, config = {}) {
         try {
           let provider;
           let signer;
-          provider = providerOrSigner;
-          signer = providerOrSigner;
+          let accounts;
+
+          if (
+            providerOrSigner &&
+            typeof providerOrSigner.listAccounts === "function"
+          ) {
+            accounts = await providerOrSigner.listAccounts();
+          }
+
+          if (ethers.Signer.isSigner(providerOrSigner)) {
+            signer = providerOrSigner;
+            provider = signer.provider;
+          } else if (accounts && accounts.length > 0) {
+            signer = providerOrSigner.getSigner();
+            provider = providerOrSigner;
+          } else {
+            signer = providerOrSigner;
+            provider = providerOrSigner;
+          }
+
           const providerNetwork = await provider.getNetwork();
           const _chainId = config.chainId || providerNetwork.chainId;
           let contractList = {};

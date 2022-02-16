@@ -4,14 +4,22 @@ import Web3Modal from "web3modal";
 import "./networkDisplay.scss";
 import { getChainData } from "./helpers/utilities";
 import Address from "./Address";
-import { useUserSigner, useContractLoader } from "../../web3hooks";
+import { useUserSigner, useContractLoader, useGasPrice } from "../../web3hooks";
 import store from "../../stores";
-import { setContracts } from "../../stores/Web3Store";
+import {
+  setContracts,
+  setConnected,
+  setTransactor,
+} from "../../stores/Web3Store";
+import { EventEnum, reactEvents } from "../../events/EventsCenter";
+import { NETWORKS } from "./helpers/constants";
+import Transactor from "./helpers/Transactor";
 
 const { ethers } = require("ethers");
 
 export default function NetworkDisplay() {
   const [injectedProvider, setInjectedProvider] = useState();
+  const [targetNetwork, setTargetNetwork] = useState();
   const [localProvider, setLocalProvider] = useState();
   const [currChainId, setCurrChainId] = useState(-1);
   const [address, setAddress] = useState();
@@ -28,9 +36,14 @@ export default function NetworkDisplay() {
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet using localProvider.
   const userSigner = useUserSigner(injectedProvider, localProvider);
   const contracts = useContractLoader(injectedProvider);
+  //   const gasPrice = useGasPrice(targetNetwork, "fast");
+  const tx = Transactor(userSigner);
 
   useEffect(async () => {
     console.log("init");
+    reactEvents.on(EventEnum.CONNECT_WEB3, handleConnect, this);
+    reactEvents.on(EventEnum.MINT_CHARS, handleMint, this);
+
     return () => {};
   }, []);
 
@@ -44,8 +57,12 @@ export default function NetworkDisplay() {
   useEffect(async () => {
     if (injectedProvider) {
       const providerNetwork = await injectedProvider.getNetwork();
+      console.log(providerNetwork.name);
       const _chainId = providerNetwork.chainId;
       setCurrChainId(_chainId);
+      if (providerNetwork.chainId == selectedChainId) {
+        setTargetNetwork(NETWORKS[providerNetwork.name]);
+      }
     }
   }, [injectedProvider]);
 
@@ -54,6 +71,20 @@ export default function NetworkDisplay() {
       store.dispatch(setContracts(contracts));
     }
   }, [contracts]);
+
+  useEffect(() => {
+    if (tx) {
+      //   console.log("setting transactor");
+      store.dispatch(setTransactor(tx));
+    }
+  }, [tx]);
+
+  function handleConnect() {
+    onConnect();
+  }
+  const handleMint = () => {
+    // onMint();
+  };
 
   //   const loadWeb3Modal = useCallback(async () => {
   //     const provider = await web3Modal.connect();
@@ -71,6 +102,7 @@ export default function NetworkDisplay() {
       const provider = await web3Modal.connect();
       setInjectedProvider(new ethers.providers.Web3Provider(provider));
       setIsConnected(true);
+      store.dispatch(setConnected(true));
     } catch (e) {
       console.log("Could not get a wallet connection", e);
       setIsConnected(false);

@@ -12,7 +12,7 @@ export default function GameTitle() {
   }, []);
 
   function handlePlayerHealthChanged(health) {
-    console.log({ health });
+    // console.log({ health });
     setPlayerHealth(health);
   }
 

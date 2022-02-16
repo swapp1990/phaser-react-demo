@@ -9,6 +9,9 @@ import "./games/PhaserNavMeshGame";
 import "./app.scss";
 import Player from "./components/panels/Player";
 import GameTitle from "./components/panels/GameTitle";
+import MintCharacter from "./components/panels/MintCharacter";
+import { EventEnum, reactEvents } from "./events/EventsCenter";
+import { useEffect, useState } from "react";
 
 const Backdrop = styled.div`
   position: absolute;
@@ -17,15 +20,17 @@ const Backdrop = styled.div`
 `;
 
 function App() {
-  const computerDialogOpen = useAppSelector(
-    (state) => state.computer.computerDialogOpen
-  );
-  let ui: JSX.Element;
-  ui = <GearSelection />;
-  if (computerDialogOpen) {
-    console.log("computerDialogOpen");
-    ui = <Chat />;
+  const [playerMinted, setPlayerMinted] = useState(false);
+
+  useEffect(() => {
+    reactEvents.on(EventEnum.PLAYER_MINTED, handlePlayerMinted);
+  }, []);
+
+  function handlePlayerMinted() {
+    console.log("handlePlayerMinted");
+    setPlayerMinted(true);
   }
+
   return (
     <div className="body">
       <div className="side">
@@ -35,6 +40,7 @@ function App() {
         <div className="items"></div>
       </div>
       <div className="game">
+        {!playerMinted && <MintCharacter />}
         <div className="header">
           <div>Spaceborn</div>
           <NetworkDisplay />
@@ -43,6 +49,7 @@ function App() {
           <div className="title">
             <GameTitle />
           </div>
+
           <div className="phaser-wrapper" id="game-container"></div>
         </div>
       </div>
