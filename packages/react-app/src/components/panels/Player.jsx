@@ -145,6 +145,9 @@ export default function Player() {
         killed: lbEntry.killed.toNumber(),
       });
     }
+    dataSourceT = dataSourceT.sort((a, b) => {
+      return b.coins - a.coins;
+    });
     setDataSource(dataSourceT);
   }
 

@@ -16,10 +16,40 @@ export default function AddLeaderboard(props) {
   const coinsCollected = useAppSelector((state) => state.pickup.coinsCollected);
   const aliensKilled = useAppSelector((state) => state.pickup.aliensKilled);
 
+  const [lbEntryName, setLbEntryName] = useState("");
+  const [canAdd, setCanAdd] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [added, setAdded] = useState(false);
+  const [currEntries, setCurrEntries] = useState([]);
+
   useEffect(() => {
     if (web3Contracts) {
     }
   }, [web3Contracts]);
+
+  useEffect(() => {
+    console.log("Init addleaderboard");
+    init();
+  }, []);
+
+  async function init() {
+    let currEntries = await getCurrentEntries();
+    currEntries = currEntries.sort((a, b) => {
+      return b.coins - a.coins;
+    });
+    console.log(currEntries);
+    let canAdd = true;
+    if (currEntries.length >= 5) {
+      let lastPosCoins = currEntries[currEntries.length - 1].coins;
+      console.log({ lastPosCoins });
+      if (coinsCollected <= lastPosCoins) {
+        canAdd = false;
+        console.log("cannot add");
+      }
+    }
+    setCanAdd(canAdd);
+    setCurrEntries(currEntries);
+  }
 
   async function onConnect() {
     reactEvents.emit(EventEnum.CONNECT_WEB3, {});
@@ -41,46 +71,43 @@ export default function AddLeaderboard(props) {
     return dataSourceT;
   }
 
-  const [lbEntryName, setLbEntryName] = useState("");
-  const [adding, setAdding] = useState(false);
-  const [added, setAdded] = useState(false);
-
   const addToLb = async () => {
     console.log("addToLb");
-    let currEntries = await getCurrentEntries();
-
+    if (!canAdd) return;
     const lbEntry = {
       name: lbEntryName,
       coins: coinsCollected,
       killed: aliensKilled,
     };
-    currEntries.push(lbEntry);
+    let entries = [...currEntries];
+    entries.push(lbEntry);
+    entries = entries.sort((a, b) => {
+      return b.coins - a.coins;
+    });
+    entries = entries.slice(0, 5);
     // const lbEntries = [lbEntry];
     setAdding(true);
-    await transactor(
-      web3Contracts.Character.addLbEntry(currEntries),
-      (update) => {
-        if (update) {
-          if (update.status === "confirmed" || update.status === 1) {
-            console.log("Added");
-          }
-          if (update.events) {
-            console.log({ event: update.events.length });
-            reactEvents.emit(EventEnum.REFRESH_LB);
-            setAdding(false);
-            setLbEntryName("");
-            setAdded(true);
-          }
-          if (update.code) {
-            setAdding(false);
-            setLbEntryName("");
-          }
-        } else {
+    await transactor(web3Contracts.Character.addLbEntry(entries), (update) => {
+      if (update) {
+        if (update.status === "confirmed" || update.status === 1) {
+          console.log("Added");
+        }
+        if (update.events) {
+          console.log({ event: update.events.length });
+          reactEvents.emit(EventEnum.REFRESH_LB);
+          setAdding(false);
+          setLbEntryName("");
+          setAdded(true);
+        }
+        if (update.code) {
           setAdding(false);
           setLbEntryName("");
         }
+      } else {
+        setAdding(false);
+        setLbEntryName("");
       }
-    );
+    });
   };
 
   const onClose = () => {
@@ -91,14 +118,24 @@ export default function AddLeaderboard(props) {
   const addLbDialog = (
     <div className="dialogWrapper">
       <h1>Game Over!</h1>
-      <h2>Congratulations!</h2>
       <h4>Aliens Killed: {aliensKilled}</h4>
       <h4>Coins Collected: {coinsCollected}</h4>
-      <h4>
-        You are #1 on the leaderboard. Complete the transaction to record it on
-        chain.
-      </h4>
-      {!added && (
+      {canAdd && (
+        <>
+          <h2>Congratulations!</h2>
+          <h4>
+            You are on the leaderboard. Complete the transaction to record it on
+            chain.
+          </h4>
+        </>
+      )}
+      {!canAdd && (
+        <>
+          <h4>Better Luck next time</h4>
+          <button onClick={onClose}>Close</button>
+        </>
+      )}
+      {canAdd && !added && (
         <div className="addLb">
           <input
             placeholder="name ..."
@@ -112,7 +149,7 @@ export default function AddLeaderboard(props) {
           <button onClick={onClose}>Cancel</button>
         </div>
       )}
-      {added && <button onClick={onClose}>Close</button>}
+      {canAdd && added && <button onClick={onClose}>Close</button>}
     </div>
   );
   const popupWindow = (
