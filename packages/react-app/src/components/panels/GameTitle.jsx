@@ -18,7 +18,7 @@ export default function GameTitle() {
 
   return (
     <>
-      <div>
+      <div style={{ color: "white" }}>
         <div>
           Coins Collected: {coinsCollected}, Player Health: {playerHealth},
           Aliens Killed: {aliensKilled}

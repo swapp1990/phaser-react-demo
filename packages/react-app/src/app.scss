@@ -3,7 +3,7 @@
 .body {
   width: 100vw;
   height: 100vh;
-  background-color: beige;
+  background-color: black;
   font-family: "Raleway", sans-serif;
   display: flex;
 }
@@ -45,10 +45,21 @@
   .header {
     height: 5%;
     width: 100%;
-    background-color: antiquewhite;
+    background-color: black;
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    .title {
+      text-transform: uppercase;
+      font-size: 32px;
+      color: white;
+      cursor: pointer;
+      z-index: 10;
+      &:hover {
+        color: aqua;
+      }
+    }
   }
   .content {
     display: flex;

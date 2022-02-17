@@ -44,6 +44,10 @@ export default function App() {
     setGameover(false);
   }
 
+  function goHome() {
+    window.location.replace("http://spaceborn.gg/");
+  }
+
   return (
     <div className="body">
       <div className="side">
@@ -62,7 +66,9 @@ export default function App() {
           />
         )}
         <div className="header">
-          <div>Spaceborn</div>
+          <div className="title" onClick={goHome}>
+            Spaceborn
+          </div>
           <NetworkDisplay />
         </div>
         <div className="content">

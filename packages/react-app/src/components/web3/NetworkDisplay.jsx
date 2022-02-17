@@ -115,11 +115,13 @@ export default function NetworkDisplay() {
       <div className="displayPanel">
         {address && <Address address={address}></Address>}
         {isConnected && selectedChainId !== currChainId && (
-          <div>You are on the wrong Network</div>
+          <div style={{ backgroundColor: "red" }}>
+            Wrong Network! Switch to Rinkeby & refresh page
+          </div>
         )}
-        {!isConnected && (
+        {/* {!isConnected && (
           <button onClick={onConnect}>Connect to Metamask</button>
-        )}
+        )} */}
       </div>
     </>
   );
