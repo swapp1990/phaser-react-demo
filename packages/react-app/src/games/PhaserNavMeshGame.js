@@ -11,6 +11,9 @@ const game = new Phaser.Game({
   parent: "game-container",
   width: 750,
   height: 750,
+  scale: {
+    mode: Phaser.Scale.ScaleModes.FIT,
+  },
   scene: [NavMeshTestScene, GameOverScene],
   plugins: {
     scene: [

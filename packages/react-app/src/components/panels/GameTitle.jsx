@@ -19,7 +19,6 @@ export default function GameTitle() {
   return (
     <>
       <div>
-        <h2>Game Combat</h2>
         <div>
           Coins Collected: {coinsCollected}, Player Health: {playerHealth},
           Aliens Killed: {aliensKilled}
