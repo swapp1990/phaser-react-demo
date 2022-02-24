@@ -4,11 +4,13 @@ interface Web3State {
   connected;
   contracts;
   transactor;
+  address;
 }
 const initialState: Web3State = {
   connected: false,
   contracts: null,
   transactor: null,
+  address: null
 };
 
 export const web3Slice = createSlice({
@@ -21,12 +23,15 @@ export const web3Slice = createSlice({
     setContracts: (state, action) => {
       state.contracts = action.payload;
     },
+    setAddress: (state, action) => {
+      state.address = action.payload;
+    },
     setTransactor: (state, action) => {
       state.transactor = action.payload;
     },
   },
 });
 
-export const { setContracts, setTransactor, setConnected } = web3Slice.actions;
+export const { setContracts, setTransactor, setConnected, setAddress } = web3Slice.actions;
 
 export default web3Slice.reducer;

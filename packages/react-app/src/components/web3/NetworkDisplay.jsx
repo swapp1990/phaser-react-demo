@@ -10,10 +10,12 @@ import {
   setContracts,
   setConnected,
   setTransactor,
+  setAddress,
 } from "../../stores/Web3Store";
 import { EventEnum, reactEvents } from "../../events/EventsCenter";
 import { NETWORKS } from "./helpers/constants";
 import Transactor from "./helpers/Transactor";
+import { useAppSelector } from "../../hooks";
 
 const { ethers } = require("ethers");
 
@@ -22,7 +24,9 @@ export default function NetworkDisplay() {
   const [targetNetwork, setTargetNetwork] = useState();
   const [localProvider, setLocalProvider] = useState();
   const [currChainId, setCurrChainId] = useState(-1);
-  const [address, setAddress] = useState();
+  // const [address, setAddress] = useState();
+
+  const address = useAppSelector((state) => state.web3.address);
   const [isConnected, setIsConnected] = useState(false);
 
   const selectedChainId = 4; //rinkeby
@@ -50,7 +54,8 @@ export default function NetworkDisplay() {
   useEffect(async () => {
     if (userSigner) {
       const newAddress = await userSigner.getAddress();
-      setAddress(newAddress);
+      // setAddress(newAddress);
+      store.dispatch(setAddress(newAddress));
     }
   }, [userSigner]);
 

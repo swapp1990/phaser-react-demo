@@ -10,9 +10,10 @@ import "./app.scss";
 import Player from "./components/panels/Player";
 import GameTitle from "./components/panels/GameTitle";
 import MintCharacter from "./components/panels/MintCharacter";
-import { EventEnum, reactEvents } from "./events/EventsCenter";
+import { EventEnum, phaserEvents, reactEvents } from "./events/EventsCenter";
 import { useEffect, useState } from "react";
 import AddLeaderboard from "./components/panels/AddLeaderboard";
+import MintNftPanel from "./components/panels/MintNftPanel";
 
 const Backdrop = styled.div`
   position: absolute;
@@ -23,10 +24,12 @@ const Backdrop = styled.div`
 export default function App() {
   const [playerMinted, setPlayerMinted] = useState(false);
   const [gameOver, setGameover] = useState(false);
+  const [showMintWindow, setShowMintWindow] = useState(false);
 
   useEffect(() => {
     reactEvents.on(EventEnum.PLAYER_MINTED, handlePlayerMinted);
     reactEvents.on(EventEnum.GAME_OVER, handleGameOver);
+    phaserEvents.on(EventEnum.PICKED_NFT, handlePickupNft);
   }, []);
 
   function handlePlayerMinted() {
@@ -39,9 +42,20 @@ export default function App() {
     setGameover(true);
   }
 
+  function handlePickupNft() {
+    console.log("handlePickupNft");
+    setShowMintWindow(true);
+  }
+
   function handleCloseEvent() {
     console.log("parent: handleCloseEvent");
     setGameover(false);
+  }
+
+  function handleMintCloseEvent() {
+    console.log("parent: handleMintCloseEvent");
+    setShowMintWindow(false);
+    reactEvents.emit(EventEnum.NFT_CLOSED);
   }
 
   function goHome() {
@@ -62,6 +76,13 @@ export default function App() {
           <AddLeaderboard
             handleCloseEvent={() => {
               handleCloseEvent();
+            }}
+          />
+        )}
+        {showMintWindow && (
+          <MintNftPanel
+            handleCloseEvent={() => {
+              handleMintCloseEvent();
             }}
           />
         )}

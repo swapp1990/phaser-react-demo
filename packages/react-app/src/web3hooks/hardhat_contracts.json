@@ -5,7 +5,7 @@
       "chainId": "4",
       "contracts": {
         "Character": {
-          "address": "0xb80BE5e0da969d5EFd5f12FEeAf279Fc8EB13DbA",
+          "address": "0x0b83572508953a45Dda04dAB55aed11EcfbFe5D2",
           "abi": [
             {
               "inputs": [],
@@ -560,17 +560,9 @@
               "type": "function"
             }
           ]
-        }
-      }
-    }
-  },
-  "31337": {
-    "localhost": {
-      "name": "localhost",
-      "chainId": "31337",
-      "contracts": {
-        "Character": {
-          "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+        },
+        "Gears": {
+          "address": "0xFe89ccE089a8384e3Df972F3Abac255B4a823478",
           "abi": [
             {
               "inputs": [],
@@ -625,6 +617,19 @@
                 }
               ],
               "name": "ApprovalForAll",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "tokenId",
+                  "type": "uint256"
+                }
+              ],
+              "name": "GearMinted",
               "type": "event"
             },
             {
@@ -735,12 +740,31 @@
                   "type": "uint256"
                 }
               ],
-              "name": "getCharacterName",
+              "name": "getGearCategory",
               "outputs": [
                 {
                   "internalType": "string",
                   "name": "",
                   "type": "string"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "tokenId",
+                  "type": "uint256"
+                }
+              ],
+              "name": "getRandom",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
                 }
               ],
               "stateMutability": "view",
@@ -784,16 +808,39 @@
               "type": "function"
             },
             {
-              "inputs": [
-                {
-                  "internalType": "string[]",
-                  "name": "names",
-                  "type": "string[]"
-                }
-              ],
-              "name": "mintMultipleCharacters",
+              "inputs": [],
+              "name": "mintRandomNft",
               "outputs": [],
               "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "name": "mintedGears",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "tokenId",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "catIdx",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "exists",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
               "type": "function"
             },
             {
@@ -804,35 +851,6 @@
                   "internalType": "string",
                   "name": "",
                   "type": "string"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "",
-                  "type": "uint256"
-                }
-              ],
-              "name": "ownedCharacters",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "tokenId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "exists",
-                  "type": "bool"
                 }
               ],
               "stateMutability": "view",
@@ -982,6 +1000,49 @@
               "inputs": [
                 {
                   "internalType": "uint256",
+                  "name": "index",
+                  "type": "uint256"
+                }
+              ],
+              "name": "tokenByIndex",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "index",
+                  "type": "uint256"
+                }
+              ],
+              "name": "tokenOfOwnerByIndex",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
                   "name": "id",
                   "type": "uint256"
                 }
@@ -992,6 +1053,19 @@
                   "internalType": "string",
                   "name": "",
                   "type": "string"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "totalSupply",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
                 }
               ],
               "stateMutability": "view",

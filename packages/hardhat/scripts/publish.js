@@ -3,7 +3,7 @@ const chalk = require("chalk");
 
 const graphDir = "../subgraph";
 const deploymentsDir = "./deployments";
-const publishDir = "../react-app/src/contracts";
+const publishDir = "../react-app/src/web3hooks";
 
 function publishContract(contractName, networkName) {
   try {

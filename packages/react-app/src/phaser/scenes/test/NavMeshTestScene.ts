@@ -1,6 +1,7 @@
 import PhaserNavMeshPlugin from "phaser-navmesh";
 import {
   EventEnum,
+  phaserEvents,
   reactEvents,
   sceneEvents,
 } from "../../../events/EventsCenter";
@@ -22,7 +23,8 @@ export default class NavMeshTestScene extends Phaser.Scene {
   private players!: Phaser.Physics.Arcade.Group;
   private currPlayer;
   private aliens!: Phaser.Physics.Arcade.Group;
-  private pickups;
+  private heartPickups;
+  private nftPickups;
   private playerAlienCollider?: Phaser.Physics.Arcade.Collider;
   private knives!: Phaser.Physics.Arcade.Group;
   private alienReplicateTimer;
@@ -55,6 +57,7 @@ export default class NavMeshTestScene extends Phaser.Scene {
 
     this.load.image("heart", "assets/rpggame/ui_heart_full.png");
     this.load.image("knife", "assets/rpggame/weapon_knife.png");
+    this.load.image("nftPickup", "assets/rpggame/nfticon.png");
   }
 
   create() {
@@ -63,6 +66,7 @@ export default class NavMeshTestScene extends Phaser.Scene {
     // reactEvents.on(EventEnum.PLAYER_MINTED, this.handlePlayerMinted, this);
     reactEvents.on(EventEnum.SPAWN_NEW_CHAR, this.handleSpawnChar, this);
     reactEvents.on(EventEnum.GAME_OVER, this.handleGameOver, this);
+    reactEvents.on(EventEnum.NFT_CLOSED, this.handleNftClosed, this);
 
     createCharacterAnims(this.anims);
     createLizardAnims(this.anims);
@@ -92,16 +96,20 @@ export default class NavMeshTestScene extends Phaser.Scene {
 
     // const follower = new FollowerSprite(this, 50, 200, navMesh);
 
-    this.pickups = this.add.group({
-      // once a heart is removed, it's added to the pool
+    this.heartPickups = this.add.group({
       classType: Pickup,
     });
+
+    this.nftPickups = this.add.group({
+      classType: Pickup,
+    });
+
     this.refreshPickups();
 
     let alien1 = this.aliens.get(20, 30, "lizard");
-    alien1.setNavMesh(this.navMesh, this.pickups);
+    alien1.setNavMesh(this.navMesh, this.heartPickups);
     let alien2 = this.aliens.get(50, 680, "lizard");
-    alien2.setNavMesh(this.navMesh, this.pickups);
+    alien2.setNavMesh(this.navMesh, this.heartPickups);
 
     // this.input.on("pointerdown", (pointer) => {
     //   const start = new Phaser.Math.Vector2(this.currPlayer.x, this.currPlayer.y);
@@ -109,10 +117,10 @@ export default class NavMeshTestScene extends Phaser.Scene {
     //   this.currPlayer.goTo(end);
     // });
 
-    this.physics.add.overlap(this.aliens, this.pickups, (hrt, alien) => {
+    this.physics.add.overlap(this.aliens, this.heartPickups, (hrt, alien) => {
       //   console.log(alien, hrt);
-      this.pickups.killAndHide(hrt);
-      this.pickups.remove(hrt);
+      this.heartPickups.killAndHide(hrt);
+      this.heartPickups.remove(hrt);
       //   store.dispatch(incrementCoinsCollected({}));
     });
 
@@ -222,18 +230,30 @@ export default class NavMeshTestScene extends Phaser.Scene {
       this
     );
     this.currPlayer.setKnives(this.knives);
-    this.physics.add.overlap(this.currPlayer, this.pickups, (player, hrt) => {
+    this.physics.add.overlap(this.currPlayer, this.heartPickups, (player, hrt) => {
       //   console.log(player, hrt);
-      this.pickups.killAndHide(hrt);
-      this.pickups.remove(hrt);
+      this.heartPickups.killAndHide(hrt);
+      this.heartPickups.remove(hrt);
       store.dispatch(incrementCoinsCollected({}));
     });
-    console.log("addCharacterToGame");
+    // console.log("addCharacterToGame");
+    this.physics.add.overlap(this.currPlayer, this.nftPickups, (player, obj2) => {
+      //   console.log(player, hrt);
+      const nft = obj2 as Pickup;
+      nft.scale = 0.4;
+      this.scene.pause();
+      phaserEvents.emit("pickup-nft");
+
+      this.nftPickups.killAndHide(obj2);
+      this.nftPickups.remove(obj2);
+    });
   }
 
   refreshPickups() {
-    this.pickups.clear(true);
+    this.heartPickups.clear(true);
+    this.nftPickups.clear(true);
     this.addRandomPickups();
+    this.addRandomNftPickup();
   }
 
   randomIntFromInterval(min, max) {
@@ -258,7 +278,7 @@ export default class NavMeshTestScene extends Phaser.Scene {
 
   addNewAlien(x, y) {
     let alien1 = this.aliens.get(x, y, "lizard");
-    alien1.setNavMesh(this.navMesh, this.pickups);
+    alien1.setNavMesh(this.navMesh, this.heartPickups);
   }
 
   getRandomPointOnNavMap() {
@@ -287,8 +307,16 @@ export default class NavMeshTestScene extends Phaser.Scene {
     for (let i = 0; i < numPickups; i++) {
       let pickupPoint = this.getRandomPointOnNavMap();
       let hrt = this.physics.add.sprite(pickupPoint.x, pickupPoint.y, "heart");
-      this.pickups.add(hrt);
+      this.heartPickups.add(hrt);
     }
+  }
+
+  private addRandomNftPickup() {
+    // nftPickup
+    let pickupPoint = this.getRandomPointOnNavMap();
+    let nft = this.physics.add.sprite(pickupPoint.x, pickupPoint.y, "nftPickup");
+    nft.scale = 0.3;
+    this.nftPickups.add(nft);
   }
 
   private handlePlayerUpdated(playerInfo) {
@@ -315,6 +343,10 @@ export default class NavMeshTestScene extends Phaser.Scene {
     this.aliens.clear(true);
     this.scene.launch("gameover");
     this.countdown = 100;
+  }
+
+  private handleNftClosed() {
+    this.scene.resume();
   }
 
   public update(_time: number, delta: number) {

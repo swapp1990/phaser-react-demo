@@ -10,16 +10,25 @@ import "./player.scss";
 
 export default function Player() {
   const [characters, setCharacters] = useState([]);
+  const [gears, setGears] = useState([]);
   const [spawnedOnce, setSpawnedOnce] = useState(false);
   const [initOnce, setInitOnce] = useState(false);
   const web3Contracts = useAppSelector((state) => state.web3.contracts);
+  const address = useAppSelector((state) => state.web3.address);
   useEffect(() => {
     if (web3Contracts) {
       setOwnedCharacters();
       reactEvents.on(EventEnum.REFRESH_LB, handleRefreshLb, this);
+      reactEvents.on(EventEnum.REFRESH_GEARS, handleRefreshGears, this);
       handleRefreshLb();
     }
   }, [web3Contracts]);
+
+  useEffect(() => {
+    if (web3Contracts && address) {
+      updateOwnedGears();
+    }
+  }, [web3Contracts, address]);
 
   useEffect(() => {}, []);
 
@@ -43,6 +52,33 @@ export default function Player() {
     setCharacters(charsOwned);
   }
 
+  async function updateOwnedGears() {
+    console.log({ address });
+    const balanceLoot = await web3Contracts.Gears.balanceOf(address);
+    console.log({ balanceLoot: balanceLoot.toNumber() });
+    const gearsOwned = [];
+    for (let tokenIndex = 0; tokenIndex < balanceLoot; tokenIndex++) {
+      try {
+        const tokenId = await web3Contracts.Gears.tokenOfOwnerByIndex(
+          address,
+          tokenIndex
+        );
+        const gearObj = await web3Contracts.Gears.mintedGears(tokenId);
+        console.log(gearObj);
+        const gearCategory = await web3Contracts.Gears.getGearCategory(tokenId);
+        console.log(gearCategory);
+        let charObj = {
+          categoryName: gearCategory,
+          tokenId: gearObj.tokenId.toNumber(),
+        };
+        gearsOwned.push(charObj);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    setGears(gearsOwned);
+  }
+
   function onCharacterChange(c, i) {
     let newState = [...characters];
     if (!newState[i].alive) return;
@@ -53,6 +89,8 @@ export default function Player() {
     setCharacters(newState);
     reactEvents.emit(EventEnum.PLAYER_UPDATED, c);
   }
+
+  function onGearChange(c, i) {}
 
   function handleCharDied(name) {
     let newState = [...characters];
@@ -89,6 +127,10 @@ export default function Player() {
     }
   }
 
+  function handlePickupNft() {
+    console.log("handlePickupNft");
+  }
+
   const playerWindow = (
     <div className="profile">
       <h1>Characters</h1>
@@ -112,6 +154,26 @@ export default function Player() {
     </div>
   );
 
+  const gearsWindow = (
+    <div className="profile">
+      <h1>Gears</h1>
+      <div className="selection">
+        {gears.map((g, i) => (
+          <div
+            className={`itemSelect ${g.active ? " itemSelected" : ""}`}
+            key={i}
+            onClick={() => onGearChange(g, i)}
+          >
+            <div className={g.active ? "active char" : "char"}>
+              <div className="name">{g.categoryName}</div>
+              <div className="status">{g.tokenId}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   const [dataSource, setDataSource] = useState([]);
 
   const columns = [
@@ -131,6 +193,10 @@ export default function Player() {
       key: "killed",
     },
   ];
+
+  async function handleRefreshGears() {
+    updateOwnedGears();
+  }
 
   async function handleRefreshLb() {
     const lbEntriesCount = await web3Contracts.Character.getLbEntriesCount();
@@ -166,6 +232,7 @@ export default function Player() {
   return (
     <div className="sideWrapper">
       {playerWindow}
+      {gearsWindow}
       {leaderBoardWindow}
     </div>
   );
